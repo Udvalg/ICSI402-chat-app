@@ -9,6 +9,7 @@ const createWindow = () => {
       nodeIntegration: true,
     },
   });
+  // win.setMenuBarVisibility(false);
   if (app.isPackaged) {
     win.loadFile(path.join(__dirname, "../build/index.html"));
   } else {
