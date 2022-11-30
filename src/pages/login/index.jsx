@@ -1,16 +1,28 @@
-import { Button, Input, Form } from 'antd';
-import { useState } from 'react';
-import { useNavigate, useNavigation } from 'react-router-dom';
+import { Button, Input, Form } from "antd";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../firebase.config";
 
-
-  export const Login = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+export const Login = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
   const navigate = useNavigate();
 
-  const onSubmit = () => {
-    console.log('login');
+  const onSubmit = async (e) => {
+    try {
+      await signInWithEmailAndPassword(auth, email, password).then(
+        (signedUser) => {
+          // signed
+          console.log(signedUser);
+          navigate("/Home");
+        }
+      );
+    } catch (e) {
+      console.log(e.message);
+      setError(true);
+    }
   };
   return (
     <div className="flex h-screen">
@@ -24,17 +36,17 @@ import { useNavigate, useNavigation } from 'react-router-dom';
         >
           <p className="text-xl">Login</p>
           <Form.Item
-            name="username"
-            rules={[{ required: true, message: 'Please input your Username!' }]}
+            name="email"
+            rules={[{ required: true, message: "Please input your Username!" }]}
           >
             <Input
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Username"
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="E-mail"
             />
           </Form.Item>
           <Form.Item
             name="password"
-            rules={[{ required: true, message: 'Please input your Password!' }]}
+            rules={[{ required: true, message: "Please input your Password!" }]}
           >
             <Input
               onChange={(e) => setPassword(e.target.value)}
@@ -43,19 +55,24 @@ import { useNavigate, useNavigation } from 'react-router-dom';
             />
           </Form.Item>
 
-          <Form.Item style={{ marginBottom: '0px' }}>
+          <Form.Item style={{ marginBottom: "0px" }}>
             <Button
-              onClick={()=>{navigate("/Home")}}
               type="default"
               htmlType="submit"
               className="login-form-button"
-              style={{ width: '100%', fontWeight: 'bold' }}
+              style={{ width: "100%", fontWeight: "bold" }}
             >
               Login
             </Button>
+            {error && "buruu mail or password"}
           </Form.Item>
-          <div style={{ display: 'flex', flexDirection: 'row-reverse' }}>
-            <Button onClick={() => {navigate("/Register")} } type="text">
+          <div style={{ display: "flex", flexDirection: "row-reverse" }}>
+            <Button
+              onClick={() => {
+                navigate("/Register");
+              }}
+              type="text"
+            >
               Register
             </Button>
           </div>
