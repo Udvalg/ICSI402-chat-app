@@ -1,4 +1,6 @@
 import React from "react";
+import { friendRequests } from "../../testData";
+import FriendReq from "../friendRequest/FriendReq";
 
 const RequestList = () => {
   return (
