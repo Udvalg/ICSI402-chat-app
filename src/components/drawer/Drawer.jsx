@@ -77,7 +77,12 @@ const Drawer = () => {
             ))
         ) : (
           <div>
-            <FriendReq reqUseId={requests} />
+            {requests.map((reqUserId) => (
+              <FriendReq
+                reqUserId={reqUserId}
+                index={requests.indexOf(reqUserId)}
+              />
+            ))}
           </div>
         )}
       </div>

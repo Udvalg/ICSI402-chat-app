@@ -12,20 +12,18 @@ import {
 import { db } from "../../firebase.config";
 import { AuthContext } from "../../context/AuthContext";
 
-const FriendReq = ({ reqUserId }) => {
+const FriendReq = ({ reqUserId, index }) => {
   const { signedUser } = useContext(AuthContext);
-  
   const docRef = doc(db, "users", reqUserId);
   const signedDocRef = doc(db, "users", signedUser.uid);
   const [displayName, setDisplayName] = useState("");
   const [userImg, setUserImg] = useState("");
-  const [friendRequests, setFriendRequests] = useState([]);
-  const [requests, setRequests] = useState([]);
+  const [friendRequests, setRequests] = useState([]);
 
   const friendRequestsOfSigned = async () => {
     const docSnap = await getDoc(signedDocRef);
     console.log(docSnap.data().friendRequests);
-    setFriendRequests(docSnap.data().friendRequests);
+    setRequests(docSnap.data().friendRequests);
   };
 
   const fetchReqUser = async () => {
@@ -34,26 +32,18 @@ const FriendReq = ({ reqUserId }) => {
     setUserImg(docSnap.data().userImg);
   };
 
-  const fetchRequests = async () => {
-    const docRef = doc(db, "users", signedUser.uid);
-    const docSnap = await getDoc(docRef);
-    console.log("reqs", docSnap.data().friendRequests);
-    setRequests(docSnap.data().friendRequests);
-  };
-
-  const handleDelete = async (index) => {
+  const handleDelete = async () => {
     updateDoc(signedDocRef, {
       friendRequests: arrayRemove(friendRequests[index]),
     });
   };
-
   const handleAccept = () => {};
   useEffect(() => {
     fetchReqUser();
     friendRequestsOfSigned();
   }, []);
 
-  return requests.map((reqUserId, index) => (
+  return (
     <div className="flex justify-between ">
       <div className="flex items-center">
         <Avatar src="https://newprofilepic2.photo-cdn.net//assets/images/article/profile.jpg" />
@@ -63,7 +53,7 @@ const FriendReq = ({ reqUserId }) => {
         <Button
           className="flex justify-center items-center"
           icon={<CloseOutlined height={100} />}
-          onClick={handleDelete(index)}
+          onClick={handleDelete}
         ></Button>
         <Button
           className="flex justify-center items-center"
@@ -72,7 +62,7 @@ const FriendReq = ({ reqUserId }) => {
         ></Button>
       </div>
     </div>
-  ));
+  );
 };
 
 export default FriendReq;
