@@ -3,6 +3,7 @@ import {
   Routes,
   Route,
   Navigate,
+  useNavigate,
 } from "react-router-dom";
 import { useContext } from "react";
 import "./App.css";
@@ -11,14 +12,12 @@ import { Login, Register, Home } from "./pages";
 import { AuthContext } from "./context/AuthContext";
 function App() {
   const { signedUser } = useContext(AuthContext);
-
   const PrivateRoute = ({ children }) => {
     if (!signedUser) {
       return <Navigate to="/Login" />;
     }
     return children;
   };
-
   return (
     <Router>
       <Routes>

@@ -25,10 +25,11 @@ export const Register = () => {
         // photoURL - iig bas update hiih.
         const docRef = await addDoc(collection(db, "users"), {
           uid: UserImpl.user.uid,
-          displayName,
           email,
+          displayName,
+          friends: {},
         });
-          
+
         await setDoc(doc(db, "userChats", UserImpl.user.uid), {}).then(() => {
           console.log("userchats stored");
         });

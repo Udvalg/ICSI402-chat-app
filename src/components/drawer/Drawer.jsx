@@ -1,21 +1,42 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FriendReq, Friend } from "../index";
 import { Button } from "antd/es/radio";
 import Search from "antd/es/input/Search";
-
 import { signOut } from "firebase/auth";
-import { auth } from "../../firebase.config";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  QuerySnapshot,
+} from "firebase/firestore";
+import { auth, db } from "../../firebase.config";
 
 import { friendRequests, friends } from "../../testData";
 
 const Drawer = () => {
   const [searchBar, setSearchBar] = useState("");
-  const [isSearchFilled, setIsSearchFilled] = useState(false);
-
-  const handleChange = (e) => {
-    setIsSearchFilled(true);
-    setSearchBar(e.target.value);
+  // const [isSearchFilled, setIsSearchFilled] = useState(false);
+  const usersRef = collection(db, "users");
+  // const userSearchQuery = query(where("displayName", "==", searchBar));
+  const [users, setUsers] = useState({});
+  const fetchUsers = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "users"));
+      querySnapshot.forEach((doc) => {
+        setUsers(doc.data);
+      });
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
   };
+
+  const handleChange = async (e) => {
+    fetchUsers();
+    setSearchBar(e.target.value);
+    console.log(users);
+  };
+
   return (
     <div className="absolute left-100 top-0 h-full py-[15px] ml-[50px] border border-red-800 w-[45vw]">
       <div>

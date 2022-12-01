@@ -1,10 +1,12 @@
 import { Button, Input, Form } from "antd";
-import { useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebase.config";
+import { AuthContext } from "../../context/AuthContext";
 
 export const Login = () => {
+  const { signedUser } = useContext(AuthContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
@@ -15,7 +17,7 @@ export const Login = () => {
       await signInWithEmailAndPassword(auth, email, password).then(
         (signedUser) => {
           // signed
-          console.log(signedUser); 
+          console.log(signedUser);
           navigate("/Home");
         }
       );
@@ -24,6 +26,10 @@ export const Login = () => {
       setError(true);
     }
   };
+
+  useEffect(() => {
+    if (signedUser) navigate("/Home");
+  }, []);
   return (
     <div className="flex h-screen">
       <div className="m-auto h-1/2">
