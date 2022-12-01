@@ -1,8 +1,12 @@
 import { Avatar, Input } from "antd";
 import React, { useContext, useState, useRef } from "react";
+import { signOut } from "firebase/auth";
+import { auth } from "../../firebase.config";
 import { MenuOutlined, UserOutlined } from "@ant-design/icons";
-import "./home.css";
+import { Button } from "antd/es/radio";
 import Search from "antd/es/input/Search";
+import "./home.css";
+
 import { FriendReq, Friend } from "../../components";
 import { friendRequests, friends, users } from "./testData";
 
@@ -15,7 +19,6 @@ export const Home = () => {
     setSearchBar(e.target.value);
     console.log(searchBar);
   };
-
   return (
     <>
       {menuShown && (
@@ -53,6 +56,12 @@ export const Home = () => {
               </div>
             )}
           </div>
+          <Button
+            className="absolute left-[20px]"
+            onClick={() => signOut(auth)}
+          >
+            Log out
+          </Button>
         </div>
       )}
       <div className="h-screen flex items-center justify-center">

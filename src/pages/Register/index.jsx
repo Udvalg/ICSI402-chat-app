@@ -28,7 +28,7 @@ export const Register = () => {
           displayName,
           email,
         });
-
+          
         await setDoc(doc(db, "userChats", UserImpl.user.uid), {}).then(() => {
           console.log("userchats stored");
         });
