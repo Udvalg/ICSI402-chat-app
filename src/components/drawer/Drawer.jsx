@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { FriendReq, Friend } from "../index";
+import React, { useContext, useEffect, useState } from "react";
+import { FriendReq, User } from "../index";
 import { Button } from "antd/es/radio";
 import Search from "antd/es/input/Search";
 import { signOut } from "firebase/auth";
-import { collectionData } from "rxfire/firestore";
-
+import { AuthContext } from "../../context/AuthContext";
+import { Test } from "./Test";
 import {
   collection,
   query,
   where,
   getDocs,
-  QuerySnapshot,
+  getDoc,
+  doc,
 } from "firebase/firestore";
 import { auth, db } from "../../firebase.config";
 
@@ -18,13 +19,16 @@ import { friendRequests, friends } from "../../testData";
 import { CloseOutlined } from "@ant-design/icons";
 
 const Drawer = () => {
+  const { signedUser } = useContext(AuthContext);
   const [searchBar, setSearchBar] = useState("");
   const [isSearchFilled, setIsSearchFilled] = useState(false);
   const [users, setUsers] = useState([]);
+  const [requests, setRequests] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
 
   useEffect(() => {
     fetchUsers();
+    fetchFriendRequests();
   }, []);
 
   const fetchUsers = async () => {
@@ -33,12 +37,16 @@ const Drawer = () => {
       users.push(doc.data());
     });
   };
+  const fetchFriendRequests = async () => {
+    const docRef = doc(db, "users", signedUser.uid);
+    const docSnap = await getDoc(docRef);
+    console.log("reqs", docSnap.data().friendRequests);
+    setRequests(docSnap.data().friendRequests);
+  };
 
   const handleChange = async (e) => {
     setSearchBar(e.target.value);
-
     setFilteredUsers();
-    console.log(users);
   };
 
   return (
@@ -58,24 +66,18 @@ const Drawer = () => {
             .filter((user) =>
               user.displayName.toLowerCase().includes(searchBar)
             )
-            .map((friend) => (
+            .map((user) => (
               <div className="my-2">
-                <Friend userName={friend.displayName} avatar={friend.avatar} />
+                <User
+                  userName={user.displayName}
+                  avatar={user.avatar}
+                  userId={user.uid}
+                />
               </div>
             ))
         ) : (
           <div>
-            <div>
-              {friendRequests.map((request) => (
-                <div className="my-2">
-                  <FriendReq
-                    key={friendRequests.indexOf(request)}
-                    userName={request.userName}
-                    avatar={request.avatar}
-                  />
-                </div>
-              ))}
-            </div>
+            <FriendReq reqUseId={requests} />
           </div>
         )}
       </div>

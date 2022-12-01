@@ -2,7 +2,7 @@ import { Button, Input, Form } from "antd";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { addDoc, collection, setDoc, doc } from "firebase/firestore";
+import { addDoc, collection, setDoc, doc, set } from "firebase/firestore";
 
 import { auth, db } from "../../firebase.config";
 
@@ -23,10 +23,12 @@ export const Register = () => {
       ).then(async (UserImpl) => {
         UserImpl.user.displayName = displayName;
         // photoURL - iig bas update hiih.
-        const docRef = await addDoc(collection(db, "users"), {
+        const docRef = doc(db, "users", UserImpl.user.uid);
+        await setDoc(docRef, {
           uid: UserImpl.user.uid,
           email,
           displayName,
+          userImg: UserImpl.user.photoURL,
           friends: {},
           friendRequests: {},
         });

@@ -1,5 +1,5 @@
 import { Avatar, Input } from "antd";
-import React, { useContext, useState, useRef } from "react";
+import React, { useContext, useState, useRef, useEffect } from "react";
 import { MenuOutlined, UserOutlined } from "@ant-design/icons";
 import "./home.css";
 
@@ -8,6 +8,7 @@ import { users } from "../../testData";
 
 export const Home = () => {
   const [menuShown, setMenuShown] = useState(false);
+
   return (
     <>
       {menuShown && <Drawer />}
@@ -24,7 +25,7 @@ export const Home = () => {
           <div className="flex flex-col overflow-y-scroll scrollbar-hide h-[calc(100%-50px)] my-2">
             {users.map((user) => (
               <div className="mb-1">
-                <Avatar key={users.indexOf(user)} icon={user} />
+                <Avatar icon={user} />
               </div>
             ))}
           </div>
