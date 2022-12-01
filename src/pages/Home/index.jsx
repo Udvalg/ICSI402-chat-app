@@ -1,5 +1,5 @@
 import { Avatar, Input } from "antd";
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useRef } from "react";
 import { MenuOutlined, UserOutlined } from "@ant-design/icons";
 import "./home.css";
 import Search from "antd/es/input/Search";

@@ -2,7 +2,9 @@ import { Button, Input, Form } from "antd";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../firebase.config";
+import { addDoc, collection, setDoc, doc } from "firebase/firestore";
+
+import { auth, db } from "../../firebase.config";
 
 export const Register = () => {
   const [error, setError] = useState("");
@@ -10,25 +12,30 @@ export const Register = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    const userName = e.username;
+    const displayName = e.username;
     const email = e.email;
     const password = e.password;
-    console.log(userName, email, password);
     try {
       const res = await createUserWithEmailAndPassword(
         auth,
         email,
         password
-      ).then((UserImpl) => {
-        UserImpl.user.displayName = userName;
+      ).then(async (UserImpl) => {
+        UserImpl.user.displayName = displayName;
         // photoURL - iig bas update hiih.
-        // firestoreluu hadgalah.
-        console.log(UserImpl.user);
+        const docRef = await addDoc(collection(db, "users"), {
+          uid: UserImpl.user.uid,
+          displayName,
+          email,
+        });
+
+        await setDoc(doc(db, "userChats", UserImpl.user.uid), {}).then(() => {
+          console.log("userchats stored");
+        });
       });
-      setUserCreate(true);
       navigate("/Home");
     } catch (e) {
-      // setError(e.message);
+      console.log(e.message);
       setError(true);
     }
   };
@@ -79,7 +86,7 @@ export const Register = () => {
             </Button>
           </div>
 
-          {isUserCreated && !error ? "user created" : ""}
+          {isUserCreated ? "user created" : ""}
           {isUserCreated && error ? "davtaj daruulhiig boliulah" : ""}
         </Form>
       </div>

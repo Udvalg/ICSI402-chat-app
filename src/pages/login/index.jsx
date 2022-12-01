@@ -15,7 +15,7 @@ export const Login = () => {
       await signInWithEmailAndPassword(auth, email, password).then(
         (signedUser) => {
           // signed
-          console.log(signedUser);
+          console.log(signedUser); 
           navigate("/Home");
         }
       );
