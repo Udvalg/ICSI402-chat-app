@@ -28,8 +28,8 @@ export const Register = () => {
           email,
           displayName,
           friends: {},
+          friendRequests: {},
         });
-
         await setDoc(doc(db, "userChats", UserImpl.user.uid), {}).then(() => {
           console.log("userchats stored");
         });

@@ -3,6 +3,8 @@ import { FriendReq, Friend } from "../index";
 import { Button } from "antd/es/radio";
 import Search from "antd/es/input/Search";
 import { signOut } from "firebase/auth";
+import { collectionData } from "rxfire/firestore";
+
 import {
   collection,
   query,
@@ -13,26 +15,26 @@ import {
 import { auth, db } from "../../firebase.config";
 
 import { friendRequests, friends } from "../../testData";
+import { CloseOutlined } from "@ant-design/icons";
 
 const Drawer = () => {
   const [searchBar, setSearchBar] = useState("");
   // const [isSearchFilled, setIsSearchFilled] = useState(false);
   const usersRef = collection(db, "users");
   // const userSearchQuery = query(where("displayName", "==", searchBar));
-  const [users, setUsers] = useState({});
+  const [users, setUsers] = useState([]);
   const fetchUsers = async () => {
-    try {
-      const querySnapshot = await getDocs(collection(db, "users"));
-      querySnapshot.forEach((doc) => {
-        setUsers(doc.data);
-      });
-    } catch (e) {
-      console.error("Error adding document: ", e);
-    }
+    const querySnapshot = await getDocs(collection(db, "users"));
+    querySnapshot.forEach((doc) => {
+      users.push(doc.data());
+    });
   };
 
-  const handleChange = async (e) => {
+  useEffect(() => {
     fetchUsers();
+  }, []);
+
+  const handleChange = async (e) => {
     setSearchBar(e.target.value);
     console.log(users);
   };
@@ -46,13 +48,9 @@ const Drawer = () => {
         <p>{searchBar !== "" ? "Friends" : "Friend Requests"}</p>
         <div className="w-100 h-[1px] bg-slate-200 my-2"></div>
         {searchBar !== "" ? (
-          friends
-            .filter((friend) =>
-              friend.userName.toLowerCase().includes(searchBar.toLowerCase())
-            )
-            .map((friend) => (
-              <Friend userName={friend.userName} avatar={friend.avatar} />
-            ))
+          users.filter((user, index) => {
+            user.displayName.includes(searchBar);
+          })
         ) : (
           <div>
             <div>

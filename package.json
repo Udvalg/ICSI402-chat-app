@@ -20,6 +20,7 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.4.3",
     "react-scripts": "5.0.1",
+    "rxfire": "^6.0.3",
     "tailwind-scrollbar-hide": "^1.1.7",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat",
     "wait-on": "^6.0.1",
