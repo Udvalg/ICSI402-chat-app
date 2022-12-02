@@ -12,11 +12,10 @@ const User = ({ userName, avatar, userId }) => {
 
   const handleRequest = async () => {
     const docSnap = await getDoc(signedUsersDocRef);
+    const userData = docSnap.data();
     console.log("signed", docSnap.data());
     updateDoc(docRef, {
-      displayName: docSnap.data().displayName,
-      userImg: docSnap.data().userImg,
-      friendRequests: arrayUnion(signedUser.uid),
+      friendRequests: arrayUnion({userId: userData.uid, displayName: userData.displayName, userImg: userData.userImg}),
     }).then(() => console.log("updated"));
   };
 

@@ -2,12 +2,28 @@ import { Avatar, Input } from "antd";
 import React, { useContext, useState, useRef, useEffect } from "react";
 import { MenuOutlined, UserOutlined } from "@ant-design/icons";
 import "./home.css";
-
+import { AuthContext  } from "../../context/AuthContext";
 import { Drawer } from "../../components";
 import { users } from "../../testData";
+import { getDoc, doc } from "firebase/firestore";
+import { db } from "../../firebase.config"
 
 export const Home = () => {
   const [menuShown, setMenuShown] = useState(false);
+  const { signedUser } = useContext(AuthContext);
+  const [signedUserData, setSignedUserData] = useState({})
+  const fetchSignedUserDoc = async () => {
+    const docRef = doc(db, "users", signedUser.uid);
+    try{
+      const docSnap = await getDoc(docRef);
+      setSignedUserData(docSnap.data());
+    } catch(e) {
+      console.log(e);
+    }
+  }
+  useEffect(() => {
+    fetchSignedUserDoc();
+  },[])
 
   return (
     <>
@@ -33,7 +49,7 @@ export const Home = () => {
             <Avatar
               className="flex justify-center items-center"
               size={40}
-              icon={<UserOutlined />}
+              src={signedUserData.userImg}
             />
           </div>
         </div>

@@ -21,7 +21,6 @@ import { CloseOutlined } from "@ant-design/icons";
 const Drawer = () => {
   const { signedUser } = useContext(AuthContext);
   const [searchBar, setSearchBar] = useState("");
-  const [isSearchFilled, setIsSearchFilled] = useState(false);
   const [users, setUsers] = useState([]);
   const [requests, setRequests] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
@@ -40,13 +39,15 @@ const Drawer = () => {
   const fetchFriendRequests = async () => {
     const docRef = doc(db, "users", signedUser.uid);
     const docSnap = await getDoc(docRef);
-    console.log("reqs", docSnap.data().friendRequests);
-    setRequests(docSnap.data().friendRequests);
+    console.log("reqss", docSnap.data().friendRequests);
+    // setRequests(docSnap.data().friendRequests);
+     docSnap.data().friendRequests.forEach((friendReqUid) => {
+        requests.push(docSnap.data().friendRequests)
+     })
   };
 
   const handleChange = async (e) => {
     setSearchBar(e.target.value);
-    setFilteredUsers();
   };
 
   return (
@@ -77,12 +78,14 @@ const Drawer = () => {
             ))
         ) : (
           <div>
-            {requests.map((reqUserId) => (
+            {requests && 
+            requests.map((reqUserId) => (
               <FriendReq
                 reqUserId={reqUserId}
                 index={requests.indexOf(reqUserId)}
               />
-            ))}
+            ))
+            }
           </div>
         )}
       </div>

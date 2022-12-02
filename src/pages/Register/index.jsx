@@ -28,7 +28,7 @@ export const Register = () => {
           uid: UserImpl.user.uid,
           email,
           displayName,
-          userImg: UserImpl.user.photoURL,
+          userImg: "",
           friends: {},
           friendRequests: {},
         });
