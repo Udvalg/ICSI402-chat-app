@@ -4,26 +4,19 @@ import { Button } from "antd/es/radio";
 import Search from "antd/es/input/Search";
 import { signOut } from "firebase/auth";
 import { AuthContext } from "../../context/AuthContext";
-import { Test } from "./Test";
 import {
   collection,
-  query,
-  where,
   getDocs,
   getDoc,
   doc,
 } from "firebase/firestore";
 import { auth, db } from "../../firebase.config";
 
-import { friendRequests, friends } from "../../testData";
-import { CloseOutlined } from "@ant-design/icons";
-
 const Drawer = () => {
   const { signedUser } = useContext(AuthContext);
   const [searchBar, setSearchBar] = useState("");
   const [users, setUsers] = useState([]);
   const [requests, setRequests] = useState([]);
-  const [filteredUsers, setFilteredUsers] = useState([]);
 
   useEffect(() => {
     fetchUsers();
@@ -35,16 +28,24 @@ const Drawer = () => {
     querySnapshot.forEach((doc) => {
       users.push(doc.data());
     });
+    console.log("all users", users);
   };
+
   const fetchFriendRequests = async () => {
     const docRef = doc(db, "users", signedUser.uid);
     const docSnap = await getDoc(docRef);
-    console.log("reqss", docSnap.data().friendRequests);
-    // setRequests(docSnap.data().friendRequests);
-     docSnap.data().friendRequests.forEach((friendReqUid) => {
-        requests.push(docSnap.data().friendRequests)
-     })
+    docSnap.data().friendRequests.forEach((req)=>{
+      requests.push(req)
+    })
+    setRequests(requests)
+    console.log("request", requests)
+    
   };
+
+  // const isMyfriend = (signedUser, userId)=>{
+  //   signedUser.friends.forEach(  (friend)=>{if(friend.userId === userId){ return true}}) 
+  //   return false
+  // }
 
   const handleChange = async (e) => {
     setSearchBar(e.target.value);
@@ -63,13 +64,14 @@ const Drawer = () => {
         <p>{searchBar !== "" ? "Friends" : "Friend Requests"}</p>
         <div className="w-[90%] h-[1px] bg-slate-200 my-2"></div>
         {searchBar !== "" ? (
-          users
-            .filter((user) =>
-              user.displayName.toLowerCase().includes(searchBar)
+           typeof users !== 'undefined'  && users.length > 0 && 
+            users.filter((user) =>
+              user?.displayName.toLowerCase().includes(searchBar) && user?.uid !== signedUser.uid
             )
             .map((user) => (
               <div className="my-2">
                 <User
+                  //isMyfriend={isMyfriend(signedUser, user.uid)}
                   userName={user.displayName}
                   avatar={user.avatar}
                   userId={user.uid}
@@ -78,13 +80,8 @@ const Drawer = () => {
             ))
         ) : (
           <div>
-            {requests && 
-            requests.map((reqUserId) => (
-              <FriendReq
-                reqUserId={reqUserId}
-                index={requests.indexOf(reqUserId)}
-              />
-            ))
+            {typeof requests !== 'undefined' && 
+            <FriendReq requests={requests} setRequests={setRequests} />
             }
           </div>
         )}
