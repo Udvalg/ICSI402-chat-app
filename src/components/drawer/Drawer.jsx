@@ -20,7 +20,6 @@ const Drawer = () => {
 
   useEffect(() => {
     fetchUsers();
-    fetchFriendRequests();
   }, []);
 
   const fetchUsers = async () => {
@@ -28,24 +27,7 @@ const Drawer = () => {
     querySnapshot.forEach((doc) => {
       users.push(doc.data());
     });
-    console.log("all users", users);
   };
-
-  const fetchFriendRequests = async () => {
-    const docRef = doc(db, "users", signedUser.uid);
-    const docSnap = await getDoc(docRef);
-    docSnap.data().friendRequests.forEach((req)=>{
-      requests.push(req)
-    })
-    setRequests(requests)
-    console.log("request", requests)
-    
-  };
-
-  // const isMyfriend = (signedUser, userId)=>{
-  //   signedUser.friends.forEach(  (friend)=>{if(friend.userId === userId){ return true}}) 
-  //   return false
-  // }
 
   const handleChange = async (e) => {
     setSearchBar(e.target.value);
@@ -71,7 +53,6 @@ const Drawer = () => {
             .map((user) => (
               <div className="my-2">
                 <User
-                  //isMyfriend={isMyfriend(signedUser, user.uid)}
                   userName={user.displayName}
                   avatar={user.avatar}
                   userId={user.uid}
@@ -80,8 +61,8 @@ const Drawer = () => {
             ))
         ) : (
           <div>
-            {typeof requests !== 'undefined' && 
-            <FriendReq requests={requests} setRequests={setRequests} />
+            {
+            <FriendReq />
             }
           </div>
         )}
