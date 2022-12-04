@@ -1,29 +1,38 @@
-import { Avatar, Input } from "antd";
-import React, { useContext, useState, useRef, useEffect } from "react";
-import { MenuOutlined, UserOutlined } from "@ant-design/icons";
+import { Avatar } from "antd";
 import "./home.css";
-import { AuthContext  } from "../../context/AuthContext";
+import React, { useContext, useState, useEffect } from "react";
+import { MenuOutlined } from "@ant-design/icons";
+import { AuthContext } from "../../context/AuthContext";
 import { Drawer } from "../../components";
-import { users } from "../../testData";
-import { getDoc, doc } from "firebase/firestore";
-import { db } from "../../firebase.config"
+import { getDoc, doc, onSnapshot } from "firebase/firestore";
+import { db } from "../../firebase.config";
 
 export const Home = () => {
   const [menuShown, setMenuShown] = useState(false);
   const { signedUser } = useContext(AuthContext);
-  const [signedUserData, setSignedUserData] = useState({})
+  const [signedUserData, setSignedUserData] = useState({});
+  const [friends, setFriends] = useState([]);
+
   const fetchSignedUserDoc = async () => {
     const docRef = doc(db, "users", signedUser.uid);
-    try{
+    try {
       const docSnap = await getDoc(docRef);
       setSignedUserData(docSnap.data());
-    } catch(e) {
+    } catch (e) {
       console.log(e);
     }
-  }
+  };
+
+  const fetchFriends = async () => {
+    const unsub = onSnapshot(doc(db, "users", signedUser?.uid), (doc) => {
+      setFriends(doc?.data()?.friends);
+    });
+  };
+
   useEffect(() => {
     fetchSignedUserDoc();
-  },[])
+    fetchFriends();
+  }, []);
 
   return (
     <>
@@ -39,11 +48,12 @@ export const Home = () => {
             />
           </div>
           <div className="flex flex-col overflow-y-scroll scrollbar-hide h-[calc(100%-50px)] my-2">
-            {users.map((user) => (
-              <div className="mb-1">
-                <Avatar icon={user} />
-              </div>
-            ))}
+            {friends.length > 0 &&
+              friends?.map((friend, index) => (
+                <div className="mb-1" key={index}>
+                  <Avatar src={friend?.userImg} />
+                </div>
+              ))}
           </div>
           <div className="userIcon mb-1">
             <Avatar

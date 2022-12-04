@@ -1,0 +1,80 @@
+import React, { useContext } from "react";
+import { AuthContext } from "../../../context/AuthContext";
+import { doc, arrayRemove, updateDoc, arrayUnion } from "firebase/firestore";
+import { db } from "../../../firebase.config";
+import { Avatar, Button } from "antd";
+import { CheckCircleFilled, CloseOutlined } from "@ant-design/icons";
+
+const FriendRequests = ({ requests }) => {
+  const { signedUser } = useContext(AuthContext);
+  const signedDocRef = doc(db, "users", signedUser.uid);
+
+  const handleDelete = ({ displayName, userId, userImg }) => {
+    updateDoc(signedDocRef, {
+      friendRequests: arrayRemove({
+        displayName: displayName,
+        userId: userId,
+        userImg: userImg,
+      }),
+    });
+    console.log("hi");
+  };
+
+  const handleAccept = ({ displayName, userId, userImg }) => {
+    updateDoc(signedDocRef, {
+      friends: arrayUnion({
+        displayName: displayName,
+        userId: userId,
+        userImg: userImg,
+      }),
+    });
+    updateDoc(signedDocRef, {
+      friendRequests: arrayRemove({
+        displayName: displayName,
+        userId: userId,
+        userImg: userImg,
+      }),
+    });
+    console.log("added");
+  };
+
+  return (
+    requests.length > 0 &&
+    requests?.map((requestUser, index) => (
+      <div className="my-2" key={index}>
+        <div className="flex justify-between ">
+          <div className="flex items-center">
+            <Avatar src={requestUser?.userImg} />
+            <p>{requestUser?.displayName}</p>
+          </div>
+          <div className="flex items-centerw-18 space-x-3">
+            <Button
+              className="flex justify-center items-center"
+              icon={<CloseOutlined height={100} />}
+              onClick={() =>
+                handleDelete({
+                  userId: requestUser.userId,
+                  userImg: requestUser.userImg,
+                  displayName: requestUser.displayName,
+                })
+              }
+            ></Button>
+            <Button
+              className="flex justify-center items-center"
+              icon={<CheckCircleFilled size={40} />}
+              onClick={() =>
+                handleAccept({
+                  userId: requestUser.userId,
+                  userImg: requestUser.userImg,
+                  displayName: requestUser.displayName,
+                })
+              }
+            ></Button>
+          </div>
+        </div>
+      </div>
+    ))
+  );
+};
+
+export default FriendRequests;
