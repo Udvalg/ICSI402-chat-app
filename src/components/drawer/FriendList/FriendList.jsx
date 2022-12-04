@@ -14,7 +14,7 @@ const FriendList = () => {
 
   const fetchFriends = async () => {
     const docSnap = await getDoc(doc(db, "users", signedUser.uid));
-    setFriends(docSnap.data?.friends);
+    setFriends(docSnap.data()?.friends);
   };
 
   return (
