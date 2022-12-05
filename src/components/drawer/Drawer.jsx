@@ -20,7 +20,6 @@ const Drawer = () => {
   const [isFriend, setIsFriend] = useState(false);
   useEffect(() => {
     fetchUsers();
-    fetchFriendRequests();
     fetchMyFriends();
   }, []);
 
@@ -30,14 +29,6 @@ const Drawer = () => {
         users.push(doc.data());
       });
     });
-  };
-
-  const fetchFriendRequests = async () => {
-    const unsub = onSnapshot(doc(db, "users", signedUser?.uid), (doc) => {
-      setRequests(doc?.data()?.friendRequests);
-    });
-    console.log(requests);
-    // setRequests(docSnap.data()?.friendRequests);
   };
 
   const fetchMyFriends = () => {
@@ -75,7 +66,7 @@ const Drawer = () => {
               <FriendList />
             </Tabs.TabPane>
             <Tabs.TabPane tab="Friend Requests" key="2">
-              <FriendRequests requests={requests} />
+              <FriendRequests />
             </Tabs.TabPane>
           </Tabs>
         </div>

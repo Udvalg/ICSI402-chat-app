@@ -1,7 +1,13 @@
 import React, { useContext, useEffect } from "react";
 import { useState } from "react";
 import Friend from "./Friend";
-import { getDoc, doc, collection, getDocs } from "firebase/firestore";
+import {
+  getDoc,
+  doc,
+  collection,
+  getDocs,
+  onSnapshot,
+} from "firebase/firestore";
 import { db } from "../../../firebase.config";
 import { AuthContext } from "../../../context/AuthContext";
 
@@ -13,8 +19,9 @@ const FriendList = () => {
   }, []);
 
   const fetchFriends = async () => {
-    const docSnap = await getDoc(doc(db, "users", signedUser.uid));
-    setFriends(docSnap.data()?.friends);
+    const unsub = onSnapshot(doc(db, "users", signedUser?.uid), (doc) => {
+      setFriends(doc?.data()?.friends);
+    });
   };
 
   return (

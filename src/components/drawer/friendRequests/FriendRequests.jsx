@@ -1,13 +1,41 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { AuthContext } from "../../../context/AuthContext";
-import { doc, arrayRemove, updateDoc, arrayUnion } from "firebase/firestore";
+import {
+  doc,
+  arrayRemove,
+  updateDoc,
+  arrayUnion,
+  onSnapshot,
+} from "firebase/firestore";
 import { db } from "../../../firebase.config";
 import { Avatar, Button } from "antd";
 import { CheckCircleFilled, CloseOutlined } from "@ant-design/icons";
+import { useEffect } from "react";
 
-const FriendRequests = ({ requests }) => {
+const FriendRequests = () => {
   const { signedUser } = useContext(AuthContext);
   const signedDocRef = doc(db, "users", signedUser.uid);
+  const [signedUserdata, setSignedUserData] = useState([]);
+  const [requests, setRequests] = useState([]);
+  const [requestUser, setRequestUser] = useState([]);
+
+  useEffect(() => {
+    fetchSignedUserData();
+    fetchFriendRequests();
+    fetchFriendRequests();
+  });
+
+  const fetchFriendRequests = async () => {
+    const unsub = onSnapshot(doc(db, "users", signedUser?.uid), (doc) => {
+      setRequests(doc?.data()?.friendRequests);
+    });
+  };
+
+  const fetchSignedUserData = () => {
+    const unsub = onSnapshot(doc(db, "users", signedUser?.uid), (doc) => {
+      setSignedUserData(doc?.data());
+    });
+  };
 
   const handleDelete = ({ displayName, userId, userImg }) => {
     updateDoc(signedDocRef, {
@@ -17,15 +45,23 @@ const FriendRequests = ({ requests }) => {
         userImg: userImg,
       }),
     });
-    console.log("hi");
   };
 
-  const handleAccept = ({ displayName, userId, userImg }) => {
+  const handleAccept = ({ userId, userImg, displayName }) => {
+    const requestedUserDoc = doc(db, "users", userId);
     updateDoc(signedDocRef, {
       friends: arrayUnion({
         displayName: displayName,
         userId: userId,
         userImg: userImg,
+      }),
+    });
+
+    updateDoc(requestedUserDoc, {
+      friends: arrayUnion({
+        displayName: signedUserdata.displayName,
+        userId: signedUserdata.uid,
+        userImg: signedUserdata.userImg,
       }),
     });
     updateDoc(signedDocRef, {
@@ -35,7 +71,6 @@ const FriendRequests = ({ requests }) => {
         userImg: userImg,
       }),
     });
-    console.log("added");
   };
 
   return (
