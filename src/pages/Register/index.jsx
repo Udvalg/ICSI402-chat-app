@@ -32,9 +32,6 @@ export const Register = () => {
           friends: {},
           friendRequests: {},
         });
-        await setDoc(doc(db, "userChats", UserImpl.user.uid), {}).then(() => {
-          console.log("userchats stored");
-        });
       });
       navigate("/Home");
     } catch (e) {
