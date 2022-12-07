@@ -13,6 +13,8 @@ import {
   arrayUnion,
 } from "firebase/firestore";
 import { db } from "../../firebase.config";
+import Message from "../../components/Message/Message";
+import Messages from "../../components/Message/Messages";
 
 export const Home = () => {
   const [menuShown, setMenuShown] = useState(false);
@@ -20,8 +22,8 @@ export const Home = () => {
   const [signedUserData, setSignedUserData] = useState({});
   const [friends, setFriends] = useState([]);
   const [selectedFriend, setSelectedFriend] = useState([]);
-  const [docData, setDocData] = useState([]);
-  const [conversationId, setConversationId] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [chatId, setChatId] = useState("");
 
   const fetchSignedUserDoc = async () => {
     const docRef = doc(db, "users", signedUser.uid);
@@ -39,51 +41,67 @@ export const Home = () => {
     });
   };
 
-  const handleSend = async (e) => {
-    const newId =
-      signedUser.uid > selectedFriend.userId
-        ? signedUser.uid + selectedFriend.userId
-        : selectedFriend.userId + signedUser.uid;
+  const generateChatId = (friend) => {
+    return signedUser.uid > friend.userId
+      ? signedUser.uid + friend.userId
+      : friend.userId + signedUser.uid;
+  };
 
-    setConversationId(newId);
+  const handleSelect = async (friend) => {
+    const newId = generateChatId(friend);
+    setChatId(newId);
+    const docRef = doc(db, "chats", chatId);
+    const docSnap = await getDoc(docRef);
 
-    const docRef = doc(db, "chats", newId);
-    const unsub = onSnapshot(doc(db, "chats", newId), (doc) => {
-      setDocData(doc.data());
-      console.log("messages", doc.data());
-    });
+    setSelectedFriend(friend); // useless now but may use later
 
-    if (docData.exists) {
-      await updateDoc(docRef, {
-        messages: arrayUnion({
-          date: new Date(),
-          msgBody: e.target.value,
-          sentBy: signedUser.uid,
-        }),
-      }).then(() => console.log("doc updated"));
-    } else {
-      await setDoc(docRef, {
-        messages: {
-          date: new Date(),
-          msgBody: e.target.value,
-          sentBy: signedUser.uid,
-        },
-      }).then(() => console.log("new doc created"));
+    if (!docSnap.exists()) {
+      await setDoc(doc(db, "chats", chatId), { messages: [] }).then(() =>
+        console.log("new chat added")
+      );
+    } else if (docSnap.exists) {
+      fetchMessages(chatId);
     }
   };
 
-  const handleSelect = (friend) => {
-    setSelectedFriend(friend);
-    console.log(selectedFriend);
+  const fetchMessages = (chatId) => {
+    const unsub = onSnapshot(doc(db, "chats", chatId), (doc) => {
+      messages.push(doc?.data());
+      setMessages(messages);
+      console.log("fetched2", messages);
+    });
+  };
+
+  const handleSend = async (e) => {
+    const docRef = doc(db, "chats", chatId);
+
+    const unsub = onSnapshot(doc(db, "chats", chatId), (doc) => {
+      messages.push(doc.data());
+    });
+
+    await updateDoc(docRef, {
+      messages: arrayUnion({
+        date: new Date(),
+        msgBody: e.target.value,
+        sentBy: signedUser.uid,
+      }),
+    }).then(() => {
+      const unsub = onSnapshot(doc(db, "chats", chatId), (doc) => {
+        messages.push(doc.data());
+      });
+      console.log("doc updated", messages);
+    });
+
+    e.target.value = "";
   };
 
   useEffect(() => {
     fetchSignedUserDoc();
     fetchFriends();
-  }, []);
+  });
   return (
     <>
-      {menuShown && <Drawer />}
+      {menuShown && <Drawer className="bg-white" />}
       <div className="h-screen flex items-center justify-center">
         <div className="flex flex-col items-center w-[50px]   h-full">
           <div className="menuIcon">
@@ -97,7 +115,7 @@ export const Home = () => {
           <div className="flex flex-col overflow-y-scroll scrollbar-hide h-[calc(100%-50px)] my-2">
             {friends.length > 0 &&
               friends?.map((friend, index) => (
-                <div className="mb-1" key={index}>
+                <div className="mb-1">
                   <Avatar
                     src={friend?.userImg}
                     className="cursor-pointer"
@@ -120,7 +138,13 @@ export const Home = () => {
           </div>
           <div className="flex flex-col border border-red-800 h-[95vh]">
             <div className="chats flex-1">
-              <p>chats</p>
+              {signedUser && (
+                <Messages
+                  chadId={chatId}
+                  selectedFriend={selectedFriend}
+                  signedUser={signedUserData}
+                />
+              )}
             </div>
 
             <div className="flex justify-end gap-[2vw] mx-[2vw] my-[5px]">
