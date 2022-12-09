@@ -24,6 +24,8 @@ const FriendList = () => {
     });
   };
 
+  const a=5;
+
   return (
     <div>
       {friends?.map((friend) => (
