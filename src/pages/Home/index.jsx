@@ -23,8 +23,8 @@ export const Home = () => {
   const [selectedFriend, setSelectedFriend] = useState([]);
   const [docData, setDocData] = useState([]);
   const [chatId, setChatId] = useState("");
-  const [messages, setMessages] = useState([])
-  const [joke,setJoke]= useState([]);
+  const [messages, setMessages] = useState([]);
+  const [joke, setJoke] = useState([]);
 
   const fetchSignedUserDoc = async () => {
     const docRef = doc(db, "users", signedUser.uid);
@@ -53,8 +53,8 @@ export const Home = () => {
     const docRef = doc(db, "chats", newId);
 
     const unsub = onSnapshot(doc(db, "chats", newId), (doc) => {
-      messages.push(doc.data());
-      console.log("tugudlur",messages)
+      messages?.push(doc.data());
+      console.log("tugudlur", messages);
     });
 
     await updateDoc(docRef, {
@@ -67,16 +67,15 @@ export const Home = () => {
       const unsub = onSnapshot(docRef, (doc) => {
         messages.push(doc.data());
       });
-      setMessages(messages)
-      
+      setMessages(messages);
+
       console.log("doc updated", messages);
     });
 
     e.target.value = "";
   };
 
-
-   const handleSelect = async (friend) => {
+  const handleSelect = async (friend) => {
     const newId = generateChatId(friend);
     setChatId(newId);
     const docRef = doc(db, "chats", newId);
@@ -85,19 +84,20 @@ export const Home = () => {
     setSelectedFriend(friend); // useless now but may use later
 
     if (!docSnap?.exists()) {
-      await setDoc(docRef, { messages: []}).then(() =>
+      await setDoc(docRef, { messages: [] }).then(() =>
         console.log("new chat added")
       );
     } else {
       fetchMessages(newId);
     }
   };
-    const fetchMessages =  (chatId) => {
-    const unsub =  onSnapshot(doc(db, "chats", chatId), (doc) => {
-      messages.push(doc?.data());
-      setMessages(messages);
+  const fetchMessages = (chatId) => {
+    const unsub = onSnapshot(doc(db, "chats", chatId), (doc) => {
+      let temp = [999];
+      temp.push(doc?.data());
+      setMessages(temp);
       console.log("fetched2", messages);
-      setJoke(messages)
+      setJoke(messages);
     });
   };
 
@@ -144,22 +144,30 @@ export const Home = () => {
           </div>
           <div className="flex flex-col flex-1 h-[calc(100vh-80px)] overflow-y-auto">
             <div className="chats flex-1 p-3">
-                {joke && selectedFriend && messages[messages.length-1]?.messages.map((msg,index) => (
-                  <Message key={index} signedUser={signedUserData} selectedFriend={selectedFriend} message={msg}/>
+              {messages &&
+                joke &&
+                selectedFriend &&
+                messages[messages.length - 1]?.messages.map((msg, index) => (
+                  <Message
+                    key={index}
+                    signedUser={signedUserData}
+                    selectedFriend={selectedFriend}
+                    message={msg}
+                  />
                 ))}
             </div>
           </div>
-          <div className="flex justify-end items-end h-[40px] pb-1" >
-              <div className="flex justify-end gap-[2vw] mx-[2vw]">
-                <Avatar />
-                <Avatar />
-                <Input
-                  className="justify-end w-[50vw]"
-                  placeholder="msg bichne uu"
-                  onPressEnter={(e) => handleSend(e)}
-                />
-              </div>
+          <div className="flex justify-end items-end h-[40px] pb-1">
+            <div className="flex justify-end gap-[2vw] mx-[2vw]">
+              <Avatar />
+              <Avatar />
+              <Input
+                className="justify-end w-[50vw]"
+                placeholder="msg bichne uu"
+                onPressEnter={(e) => handleSend(e)}
+              />
             </div>
+          </div>
         </div>
       </div>
     </>
