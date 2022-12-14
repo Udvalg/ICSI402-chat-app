@@ -26,15 +26,11 @@ export const Login = () => {
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    try {
-      await googleSignIn().then((result) => {
-        navigate("/Home");
-        console.log(result.user);
-      });
-    } catch (error) {
-      console.log(error);
-    }
+  const handleGoogleSignIn =  () => {
+       googleSignIn().then(() => 
+        console.log("hahhaha asdsdas"),
+        navigate("/Home")
+      );
   };
 
   useEffect(() => {

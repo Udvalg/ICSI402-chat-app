@@ -3,18 +3,21 @@ import {
   GoogleAuthProvider,
   onAuthStateChanged,
   signInWithPopup,
+  signInWithRedirect,
 } from "firebase/auth";
 import { auth, db } from "../firebase.config";
 import { doc, setDoc, getDoc } from "@firebase/firestore";
 import { delay } from "q";
 import { isCompositeComponent } from "react-dom/test-utils";
+import { useNavigate } from "react-router";
 
 export const AuthContext = createContext();
 export const AuthContextProvider = ({ children }) => {
   const [signedUser, setSignedUser] = useState({});
   const [signedUserDoc, setSignedUserDoc] = useState({});
+
   let dd = {};
-  const googleSignIn = async () => {
+  const googleSignUp = async () => {
     const provider = new GoogleAuthProvider();
     signInWithPopup(auth, provider).then(async (res) => {
       const docRef = doc(db, "users", res?.user.uid);
@@ -40,6 +43,14 @@ export const AuthContextProvider = ({ children }) => {
     });
   };
 
+  const googleSignIn = async () => {
+    console.log("google sign in");
+    const provider = new GoogleAuthProvider();
+    signInWithRedirect(auth, provider).then(async (res) =>
+      setSignedUser(res?.user)
+    );
+  };
+
   useEffect(() => {
     const sign = onAuthStateChanged(auth, (user) => {
       console.log("user", user);
@@ -52,7 +63,9 @@ export const AuthContextProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ signedUser, googleSignIn, signedUserDoc }}>
+    <AuthContext.Provider
+      value={{ signedUser, googleSignIn, googleSignUp, signedUserDoc }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -16,12 +16,12 @@ import { AuthContext } from "../../context/AuthContext";
 export const Register = () => {
   const [error, setError] = useState("");
   const [isUserCreated, setUserCreate] = useState(false);
-  const { googleSignIn, signedUser } = useContext(AuthContext);
+  const { googleSignUp, signedUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const handleGoogleSignIn = async () => {
+  const handleGoogleSignUp = async () => {
     try {
-      await googleSignIn();
+      await googleSignUp();
     } catch (error) {
       console.log(error);
     }
@@ -107,7 +107,7 @@ export const Register = () => {
             </Button>
           </div>
          
-           <GoogleButton onClick={() => handleGoogleSignIn()} />
+           <GoogleButton onClick={() => handleGoogleSignUp()} />
 
           {isUserCreated ? "user created" : ""}
           {isUserCreated && error ? "davtaj daruulhiig boliulah" : ""}
