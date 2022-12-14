@@ -34,7 +34,7 @@ const Drawer = () => {
   const fetchMyFriends = () => {
     const temp = [];
     const unsub = onSnapshot(doc(db, "users", signedUser?.uid), (doc) => {
-      setFriends(doc.data()?.friends);
+      setFriends(doc?.data()?.friends);
     });
   };
 

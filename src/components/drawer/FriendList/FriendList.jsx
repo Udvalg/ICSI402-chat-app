@@ -21,7 +21,7 @@ const FriendList = () => {
 
   return (
     <div>
-      {friends?.map((friend) => (
+      {friends.length > 0 && friends?.map((friend) => (
         <Friend
           key={friend?.userId}
           userId={friend?.userId}
