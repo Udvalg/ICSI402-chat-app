@@ -14,7 +14,6 @@ import {
 } from "firebase/firestore";
 import { db } from "../../firebase.config";
 import Message from "../../components/Message/Message";
-import { useRef } from "react";
 
 export const Home = () => {
   const [menuShown, setMenuShown] = useState(false);
