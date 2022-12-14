@@ -1,23 +1,49 @@
-import React, { useContext, createContext, useState, useEffect } from "react";
+import React, { createContext, useState, useEffect } from "react";
 import {
   GoogleAuthProvider,
   onAuthStateChanged,
   signInWithPopup,
-  signInWithRedirect,
 } from "firebase/auth";
-import { auth } from "../firebase.config";
+import { auth, db } from "../firebase.config";
+import { doc, setDoc, getDoc } from "@firebase/firestore";
+import { delay } from "q";
+import { isCompositeComponent } from "react-dom/test-utils";
 
 export const AuthContext = createContext();
 export const AuthContextProvider = ({ children }) => {
   const [signedUser, setSignedUser] = useState({});
-  const googleSignIn = () => {
+  const [signedUserDoc, setSignedUserDoc] = useState({});
+  let dd = {};
+  const googleSignIn = async () => {
     const provider = new GoogleAuthProvider();
-    signInWithPopup(auth, provider);
+    signInWithPopup(auth, provider).then(async (res) => {
+      const docRef = doc(db, "users", res?.user.uid);
+      await setDoc(docRef, {
+        uid: res?.user.uid,
+        email: res?.user.email,
+        displayName: res?.user.displayName,
+        userImg: res?.user.photoURL,
+        friends: {},
+        friendRequests: {},
+      })
+        .then(() => setSignedUser(res?.user))
+        .then(async () => {
+          console.log("end", res?.user.uid);
+          const docRef = doc(db, "users", res?.user.uid);
+          const docSnap = await getDoc(docRef);
+
+          dd = docSnap.data();
+          console.log("dd", dd);
+          setSignedUserDoc(dd);
+        })
+        .then(() => console.log(signedUserDoc));
+    });
   };
+
   useEffect(() => {
     const sign = onAuthStateChanged(auth, (user) => {
+      console.log("user", user);
       setSignedUser(user);
-      console.log("Signed user: ", user);
     });
 
     return () => {
@@ -26,7 +52,7 @@ export const AuthContextProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ signedUser, googleSignIn }}>
+    <AuthContext.Provider value={{ signedUser, googleSignIn, signedUserDoc }}>
       {children}
     </AuthContext.Provider>
   );

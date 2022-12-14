@@ -43,7 +43,7 @@ const Drawer = () => {
   };
 
   function isMyFriend(uid) {
-    for (var i = 0; i < friends.length; i++) {
+    for (var i = 0; i < friends?.length; i++) {
       console.log("comparing", friends[i], uid);
       if (friends[i].userId === uid) {
         return true;

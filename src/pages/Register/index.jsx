@@ -21,23 +21,12 @@ export const Register = () => {
 
   const handleGoogleSignIn = async () => {
     try {
-      await googleSignIn().then(async () => {
-        const docRef = doc(db, "users", signedUser.uid);
-        await setDoc(docRef, {
-          uid: signedUser.uid,
-          email: signedUser.email,
-          displayName: signedUser.displayName,
-          userImg: signedUser.photoURL,
-          friends: {},
-          friendRequests: {},
-        });
-        console.log("stored");
-      });
+      await googleSignIn();
     } catch (error) {
       console.log(error);
     }
+    console.log("haha")
   };
-
   useEffect(() => {
     if (signedUser != null) {
       navigate("/Login");
@@ -117,8 +106,8 @@ export const Register = () => {
               Login
             </Button>
           </div>
-          <GoogleButton onClick={() => handleGoogleSignIn()} />
-          <div></div>
+         
+           <GoogleButton onClick={() => handleGoogleSignIn()} />
 
           {isUserCreated ? "user created" : ""}
           {isUserCreated && error ? "davtaj daruulhiig boliulah" : ""}
