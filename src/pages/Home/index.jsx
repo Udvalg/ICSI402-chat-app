@@ -1,6 +1,6 @@
 import { Avatar, Input } from "antd";
 import "./home.css";
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import { MenuOutlined } from "@ant-design/icons";
 import { AuthContext } from "../../context/AuthContext";
 import { Drawer } from "../../components";
@@ -26,19 +26,21 @@ export const Home = () => {
   const [chatId, setChatId] = useState("");
   const [messages, setMessages] = useState([]);
   const [joke, setJoke] = useState([]);
+  const hoosondivref = useRef();
+  const [mapped, setMapped] = useState(false);
 
   const fetchSignedUserDoc = async () => {
-    const docRef = doc(db, "users", signedUser.uid);
+    const docRef = doc(db, "users", signedUser?.uid);
     try {
       const docSnap = await getDoc(docRef);
-      setSignedUserData(docSnap.data());
+      setSignedUserData(docSnap?.data());
     } catch (e) {
       console.log(e);
     }
   };
 
   const fetchFriends = async () => {
-    const unsub = onSnapshot(doc(db, "users", signedUser?.uid), (doc) => {
+    onSnapshot(doc(db, "users", signedUser?.uid), (doc) => {
       setFriends(doc?.data()?.friends);
     });
   };
@@ -50,6 +52,8 @@ export const Home = () => {
   };
 
   const handleSend = async (e) => {
+    hoosondivref?.current.scrollIntoView({ behavior: "smooth" });
+    console.log(e.target.value);
     const newId = generateChatId(selectedFriend);
     const docRef = doc(db, "chats", newId);
 
@@ -57,7 +61,6 @@ export const Home = () => {
       messages?.push(doc.data());
       console.log("tugudlur", messages);
     });
-
     await updateDoc(docRef, {
       messages: arrayUnion({
         date: new Date(),
@@ -142,11 +145,11 @@ export const Home = () => {
             <p>{selectedFriend.displayName}</p>
           </div>
           <div className="flex flex-col flex-1 h-[calc(100vh-80px)] overflow-y-auto">
-            <div className="chats flex-1 p-3">
+            <div className="flex flex-col flex-1 p-3">
               {messages &&
                 joke &&
                 selectedFriend &&
-                messages[messages.length - 1]?.messages.map((msg, index) => (
+                messages[messages.length - 1]?.messages?.map((msg, index) => (
                   <Message
                     key={index}
                     signedUser={signedUserData}
@@ -154,6 +157,7 @@ export const Home = () => {
                     message={msg}
                   />
                 ))}
+              <div className="h-[50px]" ref={hoosondivref}></div>
             </div>
           </div>
           <div className="flex justify-end items-end h-[40px] pb-1">
@@ -163,7 +167,9 @@ export const Home = () => {
               <Input
                 className="justify-end w-[50vw]"
                 placeholder="msg bichne uu"
-                onPressEnter={(e) => handleSend(e)}
+                onPressEnter={(e) => {
+                  handleSend(e);
+                }}
               />
             </div>
           </div>

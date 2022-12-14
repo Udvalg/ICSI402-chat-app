@@ -53,7 +53,11 @@ const Drawer = () => {
   }
 
   return (
+<<<<<<< HEAD
     <div className="absolute left-100 top-0 h-full py-[5px] px-[15px] ml-[50px] w-[45vw] bg-white index-1 z-10">
+=======
+    <div className="absolute left-100 top-0 h-full py-[5px] px-[15px] ml-[50px] w-[45vw] z-10 bg-white">
+>>>>>>> refs/remotes/origin/main
       <Search
         className="w-[90%]"
         placeholder="Search friend"
