@@ -1,5 +1,5 @@
 import { Avatar } from "antd";
-import React from "react";
+import React, { useRef, useEffect } from "react";
 
 const Message = ({ signedUser, selectedFriend, message }) => {
   return (

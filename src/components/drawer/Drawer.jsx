@@ -53,7 +53,7 @@ const Drawer = () => {
   }
 
   return (
-    <div className="absolute left-100 top-0 h-full py-[5px] px-[15px] ml-[50px] border border-red-800 w-[45vw]">
+    <div className="absolute left-100 top-0 h-full py-[5px] px-[15px] ml-[50px] w-[45vw] bg-white index-1 z-10">
       <Search
         className="w-[90%]"
         placeholder="Search friend"

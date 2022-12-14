@@ -14,6 +14,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../../firebase.config";
 import Message from "../../components/Message/Message";
+import { useRef } from "react";
 
 export const Home = () => {
   const [menuShown, setMenuShown] = useState(false);
@@ -68,11 +69,9 @@ export const Home = () => {
         messages.push(doc.data());
       });
       setMessages(messages);
-
+      e.target.value = "";
       console.log("doc updated", messages);
     });
-
-    e.target.value = "";
   };
 
   const handleSelect = async (friend) => {
