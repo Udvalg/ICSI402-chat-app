@@ -135,7 +135,8 @@ export const Home = () => {
             <Avatar
               className="flex justify-center items-center"
               size={40}
-              src={signedUserData?.userImg}
+              // src={signedUserData?.userImg}
+              src={signedUser.photoURL}
             />
           </div>
         </div>

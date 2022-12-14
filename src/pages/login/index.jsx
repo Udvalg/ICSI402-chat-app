@@ -2,11 +2,11 @@ import { Button, Input, Form } from "antd";
 import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import GoogleButton from "react-google-button";
 import { auth } from "../../firebase.config";
 import { AuthContext } from "../../context/AuthContext";
-
 export const Login = () => {
-  const { signedUser } = useContext(AuthContext);
+  const { googleSignIn, signedUser } = useContext(AuthContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
@@ -16,7 +16,6 @@ export const Login = () => {
     try {
       await signInWithEmailAndPassword(auth, email, password).then(
         (signedUser) => {
-          // signed
           console.log(signedUser);
           navigate("/Home");
         }
@@ -24,6 +23,17 @@ export const Login = () => {
     } catch (e) {
       console.log(e.message);
       setError(true);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await googleSignIn().then((result) => {
+        navigate("/Home");
+        console.log(result.user);
+      });
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -83,6 +93,9 @@ export const Login = () => {
             </Button>
           </div>
         </Form>
+        <div>
+          <GoogleButton onClick={() => handleGoogleSignIn()} />
+        </div>
       </div>
     </div>
   );
