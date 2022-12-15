@@ -1,6 +1,5 @@
 const path = require("path");
 const { app, BrowserWindow } = require("electron");
-const AutoLaunch = require("auto-launch");
 
 const createWindow = () => {
   const win = new BrowserWindow({
