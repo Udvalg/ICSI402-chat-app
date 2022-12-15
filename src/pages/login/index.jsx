@@ -38,7 +38,7 @@ export const Login = () => {
   }, []);
   return (
     <div className="flex h-screen">
-      <div className="m-auto h-1/2">
+      <div className="m-auto h-wrap">
         <Form
           name="normal_login"
           className="w-48 h-48"
@@ -67,7 +67,7 @@ export const Login = () => {
             />
           </Form.Item>
 
-          <Form.Item style={{ marginBottom: "0px" }}>
+          <Form.Item style={{ marginBottom: "8" }}>
             <Button
               type="default"
               htmlType="submit"
@@ -76,22 +76,24 @@ export const Login = () => {
             >
               Login
             </Button>
-            {error && "buruu mail or password"}
+            {error && "Буруу мейл эсвэл нууц үг оруулсан байна."}
           </Form.Item>
-          <div style={{ display: "flex", flexDirection: "row-reverse" }}>
+          <Form.Item>
             <Button
               onClick={() => {
                 navigate("/Register");
               }}
-              type="text"
+              type="default"
+              style={{ width: "100%", fontWeight: "bold" }}
             >
               Register
             </Button>
+          </Form.Item>
+          <div>
+            <span><GoogleButton onClick={() => handleGoogleSignIn()} /></span>
           </div>
         </Form>
-        <div>
-          <GoogleButton onClick={() => handleGoogleSignIn()} />
-        </div>
+       
       </div>
     </div>
   );

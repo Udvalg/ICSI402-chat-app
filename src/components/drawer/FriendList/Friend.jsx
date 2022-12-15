@@ -34,12 +34,12 @@ const Friend = ({ userId, displayName, userImg }) => {
       }),
     });
     const docref = doc(db, "users", userId);
-    // console.log("data", signedUserData);
+    console.log("data", signedUserData);
     updateDoc(docref, {
       friends: arrayRemove({
-        displayName: signedUserData.displayName,
-        userId: signedUserData.uid,
-        userImg: signedUserData.userImg,
+        displayName: signedUserData?.displayName,
+        userId: signedUser?.uid,
+        userImg: signedUserData?.userImg,
       }),
     });
   };

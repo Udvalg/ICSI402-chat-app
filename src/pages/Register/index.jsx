@@ -68,6 +68,7 @@ export const Register = () => {
           name="normal_login"
           className="width-200px"
           initialValues={{ remember: true }}
+          onFinish={(e)=>handleSubmit(e)}
           autoComplete="off"
         >
           <p className="text-xl">Register</p>
@@ -90,8 +91,8 @@ export const Register = () => {
           >
             <Input type="password" placeholder="Password" />
           </Form.Item>
-          <p>zurgaa oruuldag yum Tuugoo agaa hiine bha</p>
-          <Form.Item style={{ marginBottom: "0px" }}>
+         
+          <Form.Item style={{ marginBottom: "8px" }}>
             <Button
               type="default"
               htmlType="submit"
@@ -101,13 +102,13 @@ export const Register = () => {
               Register
             </Button>
           </Form.Item>
-          <div style={{ display: "flex", flexDirection: "row-reverse" }}>
-            <Button onClick={() => navigate("/Login")} type="text">
-              Login
+          <Form.Item>
+            <Button onClick={() => navigate("/Login")} type="default" style={{ width: "100%", fontWeight: "bold" }}>
+              Go back to login
             </Button>
-          </div>
+          </Form.Item>
          
-           <GoogleButton onClick={() => handleGoogleSignUp()} />
+           <GoogleButton onClick={() => handleGoogleSignUp()}/>
 
           {isUserCreated ? "user created" : ""}
           {isUserCreated && error ? "davtaj daruulhiig boliulah" : ""}

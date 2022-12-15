@@ -1,5 +1,6 @@
 const path = require("path");
 const { app, BrowserWindow } = require("electron");
+const AutoLaunch = require("auto-launch");
 
 const createWindow = () => {
   const win = new BrowserWindow({
@@ -30,3 +31,15 @@ app.on("activate", () => {
     createWindow();
   }
 });
+
+var autoLauncher = new AutoLaunch({
+  name: "MyApp",
+})
+  .isEnabled()
+  .then(function (isEnabled) {
+    if (isEnabled) return;
+    autoLauncher.enable();
+  })
+  .catch(function (err) {
+    throw err;
+  });

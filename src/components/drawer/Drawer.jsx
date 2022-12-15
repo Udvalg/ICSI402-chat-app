@@ -14,26 +14,26 @@ import User from "../user/User";
 const Drawer = () => {
   const { signedUser } = useContext(AuthContext);
   const [users, setUsers] = useState([]);
-  const [requests, setRequests] = useState([]);
   const [searchBar, setSearchBar] = useState("");
   const [friends, setFriends] = useState([]);
-  const [isFriend, setIsFriend] = useState(false);
   useEffect(() => {
     fetchUsers();
     fetchMyFriends();
   }, []);
 
   const fetchUsers = async () => {
-    const unsub = onSnapshot(collection(db, "users"), (snapshot) => {
+    onSnapshot(collection(db, "users"), (snapshot) => {
+      const temp = [];
       snapshot?.forEach((doc) => {
-        users.push(doc.data());
+        temp.push(doc.data());
       });
+      setUsers(temp);
     });
   };
 
   const fetchMyFriends = () => {
     const temp = [];
-    const unsub = onSnapshot(doc(db, "users", signedUser?.uid), (doc) => {
+    onSnapshot(doc(db, "users", signedUser?.uid), (doc) => {
       setFriends(doc?.data()?.friends);
     });
   };
@@ -53,7 +53,7 @@ const Drawer = () => {
   }
 
   return (
-    <div className="absolute left-100 top-0 h-full py-[5px] px-[15px] ml-[50px] w-[45vw] z-10 bg-white">
+    <div className="absolute left-100 top-0 h-full py-[5px] px-[15px] ml-[50px] w-[45vw] z-10 bg-white shadow-lg">
       <Search
         className="w-[90%]"
         placeholder="Search friend"
@@ -71,8 +71,7 @@ const Drawer = () => {
           </Tabs>
         </div>
       ) : (
-        users
-          ?.filter((user) => user.displayName.toLowerCase().includes(searchBar))
+        users?.filter((user) => user.displayName.toLowerCase().includes(searchBar) && user.uid !== signedUser.uid)
           .map((user) => (
             <div className="my-2">
               <User
