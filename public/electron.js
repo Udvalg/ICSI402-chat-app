@@ -31,15 +31,3 @@ app.on("activate", () => {
     createWindow();
   }
 });
-
-var autoLauncher = new AutoLaunch({
-  name: "MyApp",
-})
-  .isEnabled()
-  .then(function (isEnabled) {
-    if (isEnabled) return;
-    autoLauncher.enable();
-  })
-  .catch(function (err) {
-    throw err;
-  });
